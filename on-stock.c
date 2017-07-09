@@ -130,11 +130,17 @@ int main(int argc, char* argv[])
 
 void list(struct myData *datap, int numRec)
 {
+    printf("\n%-30s\t", "Name");
+    printf("%s\t", "Quantity");
+    printf("%s\t\n", "Price");
+    for (int i = 0; i<=52; i++)
+	printf("=");
+    printf("\n");
     for (int i = 0; i<numRec; i++)
     {
-	printf("Name: %s\n", datap[i].name);
-	printf("Quantity: %d\n", datap[i].quantity);
-	printf("Price: %.2f\n", datap[i].price);
+	printf("%-30s\t", datap[i].name);
+	printf("%-10d\t", datap[i].quantity);
+	printf("%.2f\t", datap[i].price);
 	printf("\n");
     }
 }
