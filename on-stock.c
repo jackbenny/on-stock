@@ -1,3 +1,8 @@
+/* A simple inventory tool written in C, by
+ * Jack-Benny Persson (jack-benny@cyberinfo.se).
+ * Released under GNU GPLv2.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -152,7 +157,6 @@ void search(struct myData *datap, int numRec)
     fgets(searchword, NAMEMAXLENGTH, stdin);
     /* Replace the newline character with a null character */
     searchword[strcspn(searchword, "\n")] = '\0';
-    printf("\n");
     
     for (int i = 0; i<numRec; i++)
     {
