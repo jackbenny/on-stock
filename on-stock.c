@@ -88,8 +88,10 @@ int main(int argc, char* argv[])
 	    return 1;
     }
 
+    /* The structure to contain our database */
     struct myData *data;
 
+    /* Continue processesing the command-line arugments */
     if ( choice == 'l' || choice == 's' || choice == 'm' || choice == 'd' )
     {
 	/* Open file in read-mode */
@@ -102,7 +104,6 @@ int main(int argc, char* argv[])
 	rewind(fp);
 	fread(data, sizeof(struct myData), numRec, fp);
 	fclose(fp);
-
 	
 	if ( choice == 'l' )
 	    list(data, numRec);
@@ -129,6 +130,7 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+
 void list(struct myData *datap, int numRec)
 {
     printHeader();
@@ -148,6 +150,7 @@ void search(struct myData *datap, int numRec)
     
     printf("Name: ");
     fgets(searchword, NAMEMAXLENGTH, stdin);
+    /* Replace the newline character with a null character */
     searchword[strcspn(searchword, "\n")] = '\0';
     printf("\n");
     
@@ -195,10 +198,12 @@ void modify(struct myData *datap, int numRec)
 		printf("Quantity (absolute value or +/-NUMBER: ");
 		fgets(quant, 20, stdin);
 		quant[strcspn(quant, "\n")] = '\0';
+		/* Process the first character */
 		if (quant[0] == '+')
 		    datap[i].quantity = datap[i].quantity + atoi(quant);
 		else if (quant[0] == '-')
 		{
+		    /* We need to replace the - with a space before atoi */
 		    quant[0] = ' ';
 		    datap[i].quantity = datap[i].quantity - atoi(quant);
 		}
@@ -240,6 +245,8 @@ void delete(struct myData *datap, int numRec)
 	    if ( answer == 'y' )
 	    {
 		FILE *newfp = fopen(filename, "wb");
+		/* Write out all records, except the one we cant to delete,
+		   back to the file, one record at a time */
 		for (int j = 0; j<numRec; j++)
 		{
 		    if ( strcmp(searchword, datap[j].name) == 0 )
@@ -262,8 +269,10 @@ int new(struct myData *datap, int numRec)
 	return 1;
     }
 
+    /* Ask for, and write out, one record at a time */
     for (;;)
     {
+	/* Clear the input buffer (from the previous iteration) */
         setbuf(stdin, NULL);
 	printf("Name ('done' when finished): ");
 	fgets(datap->name, NAMEMAXLENGTH, stdin);
