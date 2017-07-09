@@ -3,9 +3,11 @@
 #include <string.h>
 #include <unistd.h>
 
+/* Macros */
 #define FILEMAXLENGTH 50
 #define NAMEMAXLENGTH 30
 
+/* Globals */
 struct myData
 {
     char name[NAMEMAXLENGTH];
@@ -13,11 +15,15 @@ struct myData
     float price;
 };
 
+char filename[FILEMAXLENGTH] = "storage.bin";
+
+/* Function prototype */
 void list(struct myData *datap, int numRec);
 void search(struct myData *datap, int numRec);
 void modify(struct myData *datap, int numRec);
 void delete(struct myData *datap, int numRec);
 int new(struct myData *datap, int numRec);
+
 
 int main(int argc, char* argv[])
 {
@@ -25,7 +31,6 @@ int main(int argc, char* argv[])
     int create;
     int choice;
     int opt;
-    char filename[FILEMAXLENGTH] = "alloctest.bin";
 
     if (argc != 2)
     {
@@ -98,7 +103,7 @@ int main(int argc, char* argv[])
     if ( choice == 'l' || choice == 's' || choice == 'm' || choice == 'r' )
     {
 	/* Open file in read-mode */
-	FILE *fp = fopen("alloctest.bin", "rb");
+	FILE *fp = fopen(filename, "rb");
 
 	/* Read in the content from the file to the structure */
 	fseek(fp, 0, SEEK_END);
@@ -135,7 +140,7 @@ void list(struct myData *datap, int numRec)
     {
 	printf("Name: %s\n", datap[i].name);
 	printf("Quantity: %d\n", datap[i].quantity);
-	printf("Price: %f\n", datap[i].price);
+	printf("Price: %.2f\n", datap[i].price);
 	printf("\n");
     }
 }
@@ -208,7 +213,7 @@ void modify(struct myData *datap, int numRec)
 	    } 
 	}
     }
-    FILE *newfp = fopen("alloctest.bin", "wb");
+    FILE *newfp = fopen(filename, "wb");
     fwrite(datap, sizeof(struct myData), numRec, newfp);
     fclose(newfp);
 }
@@ -235,7 +240,7 @@ void delete(struct myData *datap, int numRec)
 	    answer = getchar();
 	    if ( answer == 'y' )
 	    {
-		FILE *newfp = fopen("alloctest.bin", "wb");
+		FILE *newfp = fopen(filename, "wb");
 		for (int j = 0; j<numRec; j++)
 		{
 		    if ( strcmp(searchword, datap[j].name) == 0 )
@@ -245,17 +250,13 @@ void delete(struct myData *datap, int numRec)
 		fclose(newfp);
 	    }
 	}
-	else
-	{
-	    printf("%s not found in database\n", searchword);
-	}
     }
 }
 
 int new(struct myData *datap, int numRec)
 {
     int bytes;
-    FILE *fp = fopen("alloctest.bin", "ab");
+    FILE *fp = fopen(filename, "ab");
     if (fp == NULL)
     {
 	printf("Can't open file for writing\n");
@@ -264,11 +265,12 @@ int new(struct myData *datap, int numRec)
 
     for (;;)
     {
+        setbuf(stdin, NULL);
 	printf("Name: ('done' if finish) ");
 	fgets(datap->name, NAMEMAXLENGTH, stdin);
 	datap->name[strcspn(datap->name, "\n")] = '\0';
 	
-	if ( strcmp(datap->name, "klar") == 0 )
+	if ( strcmp(datap->name, "done") == 0 )
 	{
 	    fclose(fp);
 	    return 0;
@@ -278,10 +280,9 @@ int new(struct myData *datap, int numRec)
 	bytes = fwrite(datap, sizeof(struct myData), 1, fp);
 	if (bytes != 1)
 	{
-	    printf("Kunde inte skriva till filen!\n");
+	    printf("Could not write to the file!\n");
 	    return 1;
 	}
     }
 }
-
 
