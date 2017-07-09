@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
     int choice;
     int opt;
 
-    if (argc != 2)
+    if (argc < 2)
     {
 	fprintf(stderr, "Usage: %s [-l] [-s] [-m [-m [-n] [-f filename]\n"
 		"-l = list the articles in the database\n"
@@ -83,10 +83,10 @@ int main(int argc, char* argv[])
     /* Check if file exists, if it dosen't, create it */
     if ( access(filename, R_OK|W_OK) != 0 )
     {
-	printf("Kan inte öppna %s\n", filename);
-	printf("Skapa filen och lägg till artiklar? (j/n): ");
+	printf("Could not open %s\n", filename);
+	printf("Create the file and start adding records? (y/n): ");
 	create = getchar();
-	if ( create == 'j' )
+	if ( create == 'y' )
 	{
 	    numRec = 1;
 	    struct myData *data;
@@ -266,7 +266,7 @@ int new(struct myData *datap, int numRec)
     for (;;)
     {
         setbuf(stdin, NULL);
-	printf("Name: ('done' if finish) ");
+	printf("Name ('done' when finished): ");
 	fgets(datap->name, NAMEMAXLENGTH, stdin);
 	datap->name[strcspn(datap->name, "\n")] = '\0';
 	
