@@ -24,6 +24,7 @@ void modify(struct myData *datap, int numRec);
 void delete(struct myData *datap, int numRec);
 int new(struct myData *datap, int numRec);
 void printUsage(char *arg);
+void printHeader(void);
 
 
 int main(int argc, char* argv[])
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
     }
     
     /* Process command line arugments */
-    while ((opt = getopt(argc, argv, "lsmrnf:")) != -1)
+    while ((opt = getopt(argc, argv, "lsmdnf:")) != -1)
     {
         switch (opt)
 	{
@@ -53,8 +54,8 @@ int main(int argc, char* argv[])
         case 'm':
 	    choice = 'm';
 	    break;
-        case 'r':
-	    choice = 'r';
+        case 'd':
+	    choice = 'd';
 	    break;
         case 'n':
 	    choice = 'n';
@@ -89,7 +90,7 @@ int main(int argc, char* argv[])
 
     struct myData *data;
 
-    if ( choice == 'l' || choice == 's' || choice == 'm' || choice == 'r' )
+    if ( choice == 'l' || choice == 's' || choice == 'm' || choice == 'd' )
     {
 	/* Open file in read-mode */
 	FILE *fp = fopen(filename, "rb");
@@ -109,7 +110,7 @@ int main(int argc, char* argv[])
 	    search(data, numRec);
 	else if ( choice == 'm' )
 	    modify(data, numRec);
-	else if ( choice == 'r' )
+	else if ( choice == 'd' )
 	    delete(data, numRec);
 
     }
@@ -130,12 +131,7 @@ int main(int argc, char* argv[])
 
 void list(struct myData *datap, int numRec)
 {
-    printf("\n%-30s\t", "Name");
-    printf("%s\t", "Quantity");
-    printf("%s\t\n", "Price");
-    for (int i = 0; i<=52; i++)
-	printf("=");
-    printf("\n");
+    printHeader();
     for (int i = 0; i<numRec; i++)
     {
 	printf("%-30s\t", datap[i].name);
@@ -143,6 +139,7 @@ void list(struct myData *datap, int numRec)
 	printf("%.2f\t", datap[i].price);
 	printf("\n");
     }
+    printf("\n");
 }
 
 void search(struct myData *datap, int numRec)
@@ -158,11 +155,11 @@ void search(struct myData *datap, int numRec)
     {
 	if ( strcmp(searchword, datap[i].name) != 0 )
 	    continue;
-	
-	printf("Name: %s\n", datap[i].name);
-	printf("Quantity: %d\n", datap[i].quantity);
-	printf("Price: %.2f\n", datap[i].price);
-	printf("\n");
+	printHeader();
+	printf("%-30s\t", datap[i].name);
+	printf("%-10d\t", datap[i].quantity);
+	printf("%.2f\t", datap[i].price);
+	printf("\n");	
     }
 }
 
@@ -175,16 +172,16 @@ void modify(struct myData *datap, int numRec)
     printf("Name: ");
     fgets(searchword, NAMEMAXLENGTH, stdin);
     searchword[strcspn(searchword, "\n")] = '\0';
-    printf("\n");
     
     for (int i = 0; i<numRec; i++)
     {
 	if ( strcmp(searchword, datap[i].name) == 0 )
 	{
-	    printf("Namn: %s\n", datap[i].name);
-	    printf("Quantity: %d\n", datap[i].quantity);
-	    printf("Price: %.2f\n", datap[i].price);
-	    printf("\n");
+	    printHeader();
+	    printf("%-30s\t", datap[i].name);
+	    printf("%-10d\t", datap[i].quantity);
+	    printf("%.2f\t", datap[i].price);
+	    printf("\n\n");		    
 
 	    printf("What do you like to modify? (name, quantity, price): ");
 	    fgets(what, 10, stdin);
@@ -228,15 +225,15 @@ void delete(struct myData *datap, int numRec)
     fgets(searchword, NAMEMAXLENGTH, stdin);
     searchword[strcspn(searchword, "\n")] = '\0';
     
-    printf("\n");
     for (int i = 0; i<numRec; i++)
     {
 	if ( strcmp(searchword, datap[i].name) == 0 )
 	{
-	    printf("Name: %s\n", datap[i].name);
-	    printf("Quantity: %d\n", datap[i].quantity);
-	    printf("Price: %f\n", datap[i].price);
-	    printf("\n");
+	    printHeader();
+	    printf("%-30s\t", datap[i].name);
+	    printf("%-10d\t", datap[i].quantity);
+	    printf("%.2f\t", datap[i].price);
+	    printf("\n\n");
 
 	    printf("Delete the record listed above? (y/n): ");
 	    answer = getchar();
@@ -290,12 +287,21 @@ int new(struct myData *datap, int numRec)
 
 void printUsage(char *arg)
 {
-    fprintf(stderr, "Usage: %s [-l] [-s] [-m [-m [-n] [-f filename]\n"
+    fprintf(stderr, "Usage: %s [-l] [-s] [-m [-d [-n] [-f filename]\n"
 	    "-l = list the articles in the database\n"
 	    "-s = search for an article in the database\n"
 	    "-m = modify a article\n"
-	    "-r = remove a article\n"
+	    "-d = delete a article\n"
 	    "-n = create a new article\n"
 	    "-f = specifiy a filename for the database\n", arg);
 }
 
+void printHeader(void)
+{
+    printf("\n%-30s\t", "Name");
+    printf("%s\t", "Quantity");
+    printf("%s\t\n", "Price");
+    for (int i = 0; i<=52; i++)
+	printf("=");
+    printf("\n");
+}
