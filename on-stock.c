@@ -23,6 +23,7 @@ void search(struct myData *datap, int numRec);
 void modify(struct myData *datap, int numRec);
 void delete(struct myData *datap, int numRec);
 int new(struct myData *datap, int numRec);
+void printUsage(char *arg);
 
 
 int main(int argc, char* argv[])
@@ -34,13 +35,7 @@ int main(int argc, char* argv[])
 
     if (argc < 2)
     {
-	fprintf(stderr, "Usage: %s [-l] [-s] [-m [-m [-n] [-f filename]\n"
-		"-l = list the articles in the database\n"
-		"-s = search for an article in the database\n"
-		"-m = modify a article\n"
-		"-r = remove a article\n"
-		"-n = create a new article\n"
-		"-f = specifiy a filename for the database\n", argv[0]);
+	printUsage(argv[0]);
         return 1;
     }
     
@@ -68,13 +63,7 @@ int main(int argc, char* argv[])
 	    strncpy(filename, optarg, FILEMAXLENGTH-1);
 	    break;
         default:
-            fprintf(stderr, "Usage: %s [-l] [-s] [-m [-m [-n] [-f filename]\n"
-		    "-l = list the articles in the database\n"
-		    "-s = search for an article in the database\n"
-		    "-m = modify a article\n"
-		    "-r = remove a article\n"
-		    "-n = create a new article\n"
-		    "-f = specifiy a filename for the database\n", argv[0]);
+	    printUsage(argv[0]);
             return 1;
 	}
     }
@@ -129,6 +118,11 @@ int main(int argc, char* argv[])
 	data = calloc(1, sizeof(struct myData));
 	new(data, numRec);
     }
+    else
+    {
+	printUsage(argv[0]);
+	return 1;
+    }
 
     free(data);
     return 0;
@@ -161,7 +155,7 @@ void search(struct myData *datap, int numRec)
 	
 	printf("Name: %s\n", datap[i].name);
 	printf("Quantity: %d\n", datap[i].quantity);
-	printf("Price: %f\n", datap[i].price);
+	printf("Price: %.2f\n", datap[i].price);
 	printf("\n");
     }
 }
@@ -183,19 +177,21 @@ void modify(struct myData *datap, int numRec)
 	{
 	    printf("Namn: %s\n", datap[i].name);
 	    printf("Quantity: %d\n", datap[i].quantity);
-	    printf("Price: %f\n", datap[i].price);
+	    printf("Price: %.2f\n", datap[i].price);
 	    printf("\n");
 
 	    printf("What do you like to modify? (name, quantity, price): ");
-	    scanf("%9s", what);
+	    fgets(what, 10, stdin);
+	    what[strcspn(what, "\n")] = '\0';
 	    if ( strcmp(what, "name") == 0 )
 	    {
 		printf("Name: "); scanf("%29s", datap[i].name);
 	    }
 	    else if ( strcmp(what, "quantity") == 0 )
 	    {
-		printf("Quantity (absolute value or +/-NUMBER: "); scanf("%19s", quant);
-		printf("Sign: %c\n", quant[0]);
+		printf("Quantity (absolute value or +/-NUMBER: ");
+		fgets(quant, 20, stdin);
+		quant[strcspn(quant, "\n")] = '\0';
 		if (quant[0] == '+')
 		    datap[i].quantity = datap[i].quantity + atoi(quant);
 		else if (quant[0] == '-')
@@ -284,5 +280,16 @@ int new(struct myData *datap, int numRec)
 	    return 1;
 	}
     }
+}
+
+void printUsage(char *arg)
+{
+    fprintf(stderr, "Usage: %s [-l] [-s] [-m [-m [-n] [-f filename]\n"
+	    "-l = list the articles in the database\n"
+	    "-s = search for an article in the database\n"
+	    "-m = modify a article\n"
+	    "-r = remove a article\n"
+	    "-n = create a new article\n"
+	    "-f = specifiy a filename for the database\n", arg);
 }
 
