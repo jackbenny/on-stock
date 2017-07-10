@@ -24,9 +24,9 @@ char filename[FILEMAXLENGTH] = "storage.bin";
 
 /* Function prototype */
 void list(struct myData *datap, int numRec);
-void search(struct myData *datap, int numRec);
-void modify(struct myData *datap, int numRec);
-void delete(struct myData *datap, int numRec);
+void search(struct myData *datap, int numRec, char *name);
+void modify(struct myData *datap, int numRec, char *name, char *num);
+void delete(struct myData *datap, int numRec, char *name);
 int new(struct myData *datap, int numRec);
 void printUsage(char *arg);
 void printHeader(void);
@@ -112,12 +112,18 @@ int main(int argc, char* argv[])
 	
 	if ( choice == 'l' )
 	    list(data, numRec);
-	else if ( choice == 's' )
-	    search(data, numRec);
-	else if ( choice == 'm' )
-	    modify(data, numRec);
-	else if ( choice == 'd' )
-	    delete(data, numRec);
+	else if ( choice == 's' && argc >= 2 )
+	    search(data, numRec, argv[2]);
+	else if ( choice == 's' && argc <= 2)
+	    search(data, numRec, NULL);
+	else if ( choice == 'm' && argc >= 3)
+	    modify(data, numRec, argv[2], argv[3]);
+	else if ( choice == 'm' && argc <= 4)
+	    modify(data, numRec, NULL, NULL);
+	else if ( choice == 'd' && argc >= 2 )
+	    delete(data, numRec, argv[2]);
+	else if ( choice == 'd' && argc <= 2 )
+	    delete(data, numRec, NULL);
 
     }
     else if ( choice == 'n' )
@@ -149,14 +155,20 @@ void list(struct myData *datap, int numRec)
     printf("\n");
 }
 
-void search(struct myData *datap, int numRec)
+void search(struct myData *datap, int numRec, char *name)
 {
     char searchword[NAMEMAXLENGTH];
-    
-    printf("Name: ");
-    fgets(searchword, NAMEMAXLENGTH, stdin);
-    /* Replace the newline character with a null character */
-    searchword[strcspn(searchword, "\n")] = '\0';
+    if (name != NULL)
+    {
+	strncpy(searchword, name, NAMEMAXLENGTH-1);
+    }
+    else
+    {
+	printf("Name: ");
+	fgets(searchword, NAMEMAXLENGTH, stdin);
+	/* Replace the newline character with a null character */
+	searchword[strcspn(searchword, "\n")] = '\0';
+    }
     
     for (int i = 0; i<numRec; i++)
     {
@@ -170,15 +182,26 @@ void search(struct myData *datap, int numRec)
     }
 }
 
-void modify(struct myData *datap, int numRec)
+void modify(struct myData *datap, int numRec, char *name, char *num)
 {
     char searchword[NAMEMAXLENGTH];
     char what[10];
     char quant[20];
-
-    printf("Name: ");
-    fgets(searchword, NAMEMAXLENGTH, stdin);
-    searchword[strcspn(searchword, "\n")] = '\0';
+    int interactive = 1;
+    
+    if (name != NULL && num != NULL)
+    {
+	strncpy(searchword, name, NAMEMAXLENGTH-1);
+	strncpy(what, "quantity", 9);
+	strncpy(quant, num, 19);
+	interactive = 0;
+    }
+    else
+    {
+	printf("Name: ");
+	fgets(searchword, NAMEMAXLENGTH, stdin);
+	searchword[strcspn(searchword, "\n")] = '\0';
+    }
     
     for (int i = 0; i<numRec; i++)
     {
@@ -190,18 +213,24 @@ void modify(struct myData *datap, int numRec)
 	    printf("%.2f\t", datap[i].price);
 	    printf("\n\n");		    
 
-	    printf("What do you like to modify? (name, quantity, price): ");
-	    fgets(what, 10, stdin);
-	    what[strcspn(what, "\n")] = '\0';
+	    if (interactive == 1)
+	    {
+		printf("What do you like to modify? (name, quantity, price): ");
+		fgets(what, 10, stdin);
+		what[strcspn(what, "\n")] = '\0';
+	    }
 	    if ( strcmp(what, "name") == 0 )
 	    {
 		printf("Name: "); scanf("%29s", datap[i].name);
 	    }
 	    else if ( strcmp(what, "quantity") == 0 )
 	    {
-		printf("Quantity (absolute value or +/-NUMBER: ");
-		fgets(quant, 20, stdin);
-		quant[strcspn(quant, "\n")] = '\0';
+		if (interactive == 1)
+		{
+		    printf("Quantity (absolute value or +/-NUMBER: ");
+		    fgets(quant, 20, stdin);
+		    quant[strcspn(quant, "\n")] = '\0';
+		}
 		/* Process the first character */
 		if (quant[0] == '+')
 		    datap[i].quantity = datap[i].quantity + atoi(quant);
@@ -226,14 +255,21 @@ void modify(struct myData *datap, int numRec)
     fclose(newfp);
 }
 
-void delete(struct myData *datap, int numRec)
+void delete(struct myData *datap, int numRec, char *name)
 {
     char searchword[NAMEMAXLENGTH];
     int answer;
-    printf("Name: ");
-    fgets(searchword, NAMEMAXLENGTH, stdin);
-    searchword[strcspn(searchword, "\n")] = '\0';
     
+    if (name != NULL)
+    {
+	strncpy(searchword, name, NAMEMAXLENGTH-1);
+    }
+    else
+    {
+	printf("Name: ");
+	fgets(searchword, NAMEMAXLENGTH, stdin);
+	searchword[strcspn(searchword, "\n")] = '\0';
+    }
     for (int i = 0; i<numRec; i++)
     {
 	if ( strcmp(searchword, datap[i].name) == 0 )
