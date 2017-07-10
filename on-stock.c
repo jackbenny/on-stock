@@ -46,7 +46,7 @@ int main(int argc, char* argv[])
     }
     
     /* Process command line arugments */
-    while ((opt = getopt(argc, argv, "lsmdnf:")) != -1)
+    while ((opt = getopt(argc, argv, "hlsmdnf:")) != -1)
     {
         switch (opt)
 	{
@@ -68,6 +68,9 @@ int main(int argc, char* argv[])
 	case 'f':
 	    strncpy(filename, optarg, FILEMAXLENGTH-1);
 	    break;
+	case 'h':
+	    printUsage(argv[0]);
+	    return 0;
         default:
 	    printUsage(argv[0]);
             return 1;
@@ -357,13 +360,25 @@ int new(struct myData *datap, int numRec)
 
 void printUsage(char *arg)
 {
-    fprintf(stderr, "Usage: %s [-l] [-s] [-m [-d [-n] [-f filename]\n"
-	    "-l = list the articles in the database\n"
-	    "-s = search for an article in the database\n"
-	    "-m = modify a article\n"
-	    "-d = delete a article\n"
-	    "-n = create a new article\n"
-	    "-f = specifiy a filename for the database\n", arg);
+    fprintf(stderr, "Usage: %s [-l] [-s [name]] [-m [name (a/s)quantity]]\n" 
+	             "[-d [name]] [-n] [-h] [-f filename]\n\n"
+	"-l = list the articles in the database\n"
+	"-s = search for an article in the database\n"
+        "     If no name is given as argument, you will be prompted for a name.\n"
+	"-m = modify a article\n"
+        "     If no name is given as argument, you will be prompted for a\n"
+        "     name. You'll then have the choice to change name, quantity and price.\n"
+        "     If a name is given as argument, the quantity can be changed from the\n"
+        "     command line, such as subtracting the stock by three:\n"
+        "     ./on-stock -m 'Nailgun' s3\n"
+	"-d = delete a article\n"
+        "     If no name is given as argument, you will be prompted for an article\n"
+        "     to delete.\n"
+        "     If a name is given as argument, no confirmation will be required to\n"
+        "     delete the article from the database.\n"
+	"-n = create new articles (interactive mode only)\n"
+	"-h = display this help message\n"
+	"-f = specifiy a filename for the database\n", arg);
 }
 
 void printHeader(void)

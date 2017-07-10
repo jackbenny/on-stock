@@ -8,22 +8,23 @@ of other businesses, but for me it's more than enough.
 # Usage
 
 	Usage: ./on-stock [-l] [-s [name]] [-m [name (a/s)quantity]] 
-	                  [-d [name]] [-n] [-f filename]
+	                  [-d [name]] [-n] [-h] [-f filename]
 	-l = list the articles in the database
 	-s = search for an article in the database
-		 If no name is given as argument, you will be prompted for a name.
+         If no name is given as argument, you will be prompted for a name.
 	-m = modify a article
-	     If no name is given as argument, you will be prompted for a
-	     name. You'll then have the choice to change name, quantity and price.
-		 If a name is given as argument, the quantity can be changed from the
-	     command line, such as subtracting the stock by three:
-		 ./on-stock -m "Nailgun" s3
+         If no name is given as argument, you will be prompted for a
+         name. You'll then have the choice to change name, quantity and price.
+         If a name is given as argument, the quantity can be changed from the
+         command line, such as subtracting the stock by three:
+         ./on-stock -m "Nailgun" s3
 	-d = delete a article
-		 If no name is given as argument, you will be prompted for an article
-		 to delete.
-		 If a name is given as argument, no confirmation will be required to
-		 delete the article from the database.
+         If no name is given as argument, you will be prompted for an article
+         to delete.
+         If a name is given as argument, no confirmation will be required to
+         delete the article from the database.
 	-n = create new articles (interactive mode only)
+	-h = display this help message
 	-f = specifiy a filename for the database
 
 
