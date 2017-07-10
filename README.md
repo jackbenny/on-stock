@@ -7,12 +7,23 @@ of other businesses, but for me it's more than enough.
 
 # Usage
 
-	Usage: ./on-stock [-l] [-s] [-m [-d [-n] [-f filename]
+	Usage: ./on-stock [-l] [-s [name]] [-m [name (a/s)quantity]] 
+	                  [-d [name]] [-n] [-f filename]
 	-l = list the articles in the database
 	-s = search for an article in the database
+		 If no name is given as argument, you will be prompted for a name.
 	-m = modify a article
+	     If no name is given as argument, you will be prompted for a
+	     name. You'll then have the choice to change name, quantity and price.
+		 If a name is given as argument, the quantity can be changed from the
+	     command line, such as subtracting the stock by three:
+		 ./on-stock -m "Nailgun" s3
 	-d = delete a article
-	-n = create a new article
+		 If no name is given as argument, you will be prompted for an article
+		 to delete.
+		 If a name is given as argument, no confirmation will be required to
+		 delete the article from the database.
+	-n = create new articles (interactive mode only)
 	-f = specifiy a filename for the database
 
 
@@ -64,6 +75,18 @@ of other businesses, but for me it's more than enough.
     Delete the record listed above? (y/n): y
 
 *Nail* is now deleted from the database.
+
+	jake@red-dwarf:on-stock$ ./on-stock -d Hammer
+	
+*Hammer* is now deleted from the database.
+
+	jake@red-dwarf:on-stock$ ./on-stock -m Bolt a10
+
+The number of *Bolts* on stock is increased by 10.
+
+	jake@red-dwarf:on-stock$ ./on-stock -m Bolt s5
+	
+The number of *Bolts* on stock is decreased by 5.
 
 
 # License
