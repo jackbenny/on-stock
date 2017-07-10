@@ -78,7 +78,7 @@ int main(int argc, char* argv[])
     /* Check if file exists, if it dosen't, create it */
     if ( access(filename, R_OK|W_OK) != 0 )
     {
-	printf("Could not open %s\n", filename);
+	fprintf(stderr, "Could not open %s\n", filename);
 	printf("Create the file and start adding records? (y/n): ");
 	create = getchar();
 	if ( create == 'y' )
@@ -129,7 +129,8 @@ int main(int argc, char* argv[])
     else if ( choice == 'n' )
     {
 	data = calloc(1, sizeof(struct myData));
-	new(data, numRec);
+	if ( new(data, numRec) == 1 )
+	    return 1;
     }
     else
     {
@@ -207,18 +208,19 @@ void modify(struct myData *datap, int numRec, char *name, char *num)
     {
 	if ( strcmp(searchword, datap[i].name) == 0 )
 	{
-	    printHeader();
-	    printf("%-30s\t", datap[i].name);
-	    printf("%-10d\t", datap[i].quantity);
-	    printf("%.2f\t", datap[i].price);
-	    printf("\n\n");		    
-
 	    if (interactive == 1)
 	    {
+		printHeader();
+		printf("%-30s\t", datap[i].name);
+		printf("%-10d\t", datap[i].quantity);
+		printf("%.2f\t", datap[i].price);
+		printf("\n\n");    
+
 		printf("What do you like to modify? (name, quantity, price): ");
 		fgets(what, 10, stdin);
 		what[strcspn(what, "\n")] = '\0';
 	    }
+
 	    if ( strcmp(what, "name") == 0 )
 	    {
 		printf("Name: "); scanf("%29s", datap[i].name);
@@ -227,16 +229,18 @@ void modify(struct myData *datap, int numRec, char *name, char *num)
 	    {
 		if (interactive == 1)
 		{
-		    printf("Quantity (absolute value or +/-NUMBER: ");
+		    printf("Quantity (absolute value or (a)dd/(s)ubtractNUMBER): ");
 		    fgets(quant, 20, stdin);
 		    quant[strcspn(quant, "\n")] = '\0';
 		}
 		/* Process the first character */
-		if (quant[0] == '+')
-		    datap[i].quantity = datap[i].quantity + atoi(quant);
-		else if (quant[0] == '-')
+		if (quant[0] == 'a')
 		{
-		    /* We need to replace the - with a space before atoi */
+		    quant[0] = ' '; /* We need to remove the character first */
+		    datap[i].quantity = datap[i].quantity + atoi(quant);
+		}
+		else if (quant[0] == 's')
+		{
 		    quant[0] = ' ';
 		    datap[i].quantity = datap[i].quantity - atoi(quant);
 		}
@@ -249,6 +253,12 @@ void modify(struct myData *datap, int numRec, char *name, char *num)
 		printf("Price: "); scanf("%f", &datap[i].price);
 	    } 
 	}
+	else
+	{
+	    fprintf(stderr, "Could not find %s in database\n", searchword);
+	    exit(1);
+	}
+	
     }
     FILE *newfp = fopen(filename, "wb");
     fwrite(datap, sizeof(struct myData), numRec, newfp);
@@ -259,10 +269,13 @@ void delete(struct myData *datap, int numRec, char *name)
 {
     char searchword[NAMEMAXLENGTH];
     int answer;
+    int interactive = 1;
     
     if (name != NULL)
     {
 	strncpy(searchword, name, NAMEMAXLENGTH-1);
+	interactive = 0;
+	answer = 'y';
     }
     else
     {
@@ -274,14 +287,17 @@ void delete(struct myData *datap, int numRec, char *name)
     {
 	if ( strcmp(searchword, datap[i].name) == 0 )
 	{
-	    printHeader();
-	    printf("%-30s\t", datap[i].name);
-	    printf("%-10d\t", datap[i].quantity);
-	    printf("%.2f\t", datap[i].price);
-	    printf("\n\n");
+	    if (interactive == 1)
+	    {
+		printHeader();
+		printf("%-30s\t", datap[i].name);
+		printf("%-10d\t", datap[i].quantity);
+		printf("%.2f\t", datap[i].price);
+		printf("\n\n");
 
-	    printf("Delete the record listed above? (y/n): ");
-	    answer = getchar();
+		printf("Delete the record listed above? (y/n): ");
+		answer = getchar();
+	    }
 	    if ( answer == 'y' )
 	    {
 		FILE *newfp = fopen(filename, "wb");
@@ -295,6 +311,11 @@ void delete(struct myData *datap, int numRec, char *name)
 		}
 		fclose(newfp);
 	    }
+	}
+	else
+	{
+	    fprintf(stderr, "Could not find %s in database\n", searchword);
+	    exit(1);
 	}
     }
 }
@@ -328,7 +349,7 @@ int new(struct myData *datap, int numRec)
 	bytes = fwrite(datap, sizeof(struct myData), 1, fp);
 	if (bytes != 1)
 	{
-	    printf("Could not write to the file!\n");
+	    fprintf(stderr, "Could not write to the file!\n");
 	    return 1;
 	}
     }
