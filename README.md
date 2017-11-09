@@ -7,26 +7,16 @@ of other businesses, but for me it's more than enough.
 
 # Usage
 
-	Usage: ./on-stock [-l] [-s [name]] [-m [name (a/s)quantity]] 
-	                  [-d [name]] [-n] [-h] [-f filename]
-	-l = list the articles in the database
-	-s = search for an article in the database
-         If no name is given as argument, you will be prompted for a name.
-	-m = modify a article
-         If no name is given as argument, you will be prompted for a
-         name. You'll then have the choice to change name, quantity and price.
-         If a name is given as argument, the quantity can be changed from the
-         command line, such as subtracting the stock by three:
-         ./on-stock -m "Nailgun" s3
-	-d = delete a article
-         If no name is given as argument, you will be prompted for an article
-         to delete.
-         If a name is given as argument, no confirmation will be required to
-         delete the article from the database.
-	-n = create new articles (interactive mode only)
-	-h = display this help message
-	-f = specifiy a filename for the database
-
+    Usage: ./on-stock [-l] [-s name][-m name 
+    [-d name] [-n] [-h] [-f filename]
+    
+    -l      = list the articles in the database
+    -s name = search for an 'name' in the database
+    -m name = modify the article named 'name' in the database
+         You'll then have the choice to change name, quantity and price.
+    -d name = delete the article named 'name'
+    -n      = create new articles (interactive mode only)
+    -h      = display this help message
 
 ## Examples
 
@@ -54,20 +44,18 @@ of other businesses, but for me it's more than enough.
     Hammer                          12              59.00
 
 
-    jake@red-dwarf:on-stock$ ./on-stock -m
-    Name: Bolt
+    jake@red-dwarf:on-stock$ ./on-stock -m "Bolt"
     
     Name                            Quantity        Price
     =====================================================
     Bolt                            89              9.99
     
     What do you like to modify? (name, quantity, price): quantity
-    Quantity (absolute value or +/-NUMBER: -9
+    Quantity (absolute value or a(dd)/s(subtract)NUMBER: s9
 
 *Bolt* quantity is now 80.
 
-    jake@red-dwarf:on-stock$ ./on-stock -d
-    Name: Nail
+    jake@red-dwarf:on-stock$ ./on-stock -d "Nail"
     
     Name                            Quantity        Price
     =====================================================
@@ -76,19 +64,6 @@ of other businesses, but for me it's more than enough.
     Delete the record listed above? (y/n): y
 
 *Nail* is now deleted from the database.
-
-	jake@red-dwarf:on-stock$ ./on-stock -d Hammer
-	
-*Hammer* is now deleted from the database.
-
-	jake@red-dwarf:on-stock$ ./on-stock -m Bolt a10
-
-The number of *Bolts* on stock is increased by 10.
-
-	jake@red-dwarf:on-stock$ ./on-stock -m Bolt s5
-	
-The number of *Bolts* on stock is decreased by 5.
-
 
 # License
 
