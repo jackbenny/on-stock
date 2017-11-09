@@ -8,8 +8,8 @@ of other businesses, but for me it's more than enough.
 # Usage
 
     Usage: ./on-stock [-l] [-s name][-m name 
-    [-d name] [-n] [-h] [-f filename]
-    
+    [-d name] [-n] [-h] 
+
     -l      = list the articles in the database
     -s name = search for an 'name' in the database
     -m name = modify the article named 'name' in the database
